@@ -19,10 +19,16 @@ token.json
 config.json
 
 # Data files (may contain sensitive info)
+*.csv
+*.json
+!data/.gitkeep
+!render.yaml
 data/*.csv
 data/*.json
 phases/*/attachments/
 phases/*/state/
+phases/**/*.csv
+phases/**/*.json
 
 # Vector databases
 vector_db/
