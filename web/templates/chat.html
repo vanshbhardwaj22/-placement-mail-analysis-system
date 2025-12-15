@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .header-text h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            background: #f8f9fa;
+            padding: 10px 30px;
+            display: flex;
+            gap: 30px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.85rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.assistant {
+            background: #f1f3f4;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.assistant .jobs-list {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .job-card h4 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .job-card p {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 3px 0;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 15px 20px;
+            background: #f1f3f4;
+            border-radius: 18px;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .input-container {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus {
+            border-color: #667eea;
+        }
+
+        .input-container button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .input-container button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-container button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .suggestions {
+            padding: 10px 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .suggestion:hover {
+            background: #dee2e6;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .welcome-message h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .welcome-message p {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">💼</div>
+            <div class="header-text">
+                <h1>Job Search Assistant</h1>
+                <p>AI-powered placement opportunity finder</p>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <span>📊 Jobs:</span>
+                <span class="stat-value" id="total-jobs">-</span>
+            </div>
+            <div class="stat">
+                <span>🏢 Companies:</span>
+                <span class="stat-value" id="total-companies">-</span>
+            </div>
+            <div class="stat">
+                <span>📍 Locations:</span>
+                <span class="stat-value" id="total-locations">-</span>
+            </div>
+        </div>
+
+        <div class="chat-container" id="chat-container">
+            <div class="welcome-message">
+                <h2>👋 Welcome!</h2>
+                <p>I'm your AI job search assistant. Ask me about placement opportunities!</p>
+            </div>
+        </div>
+
+        <div class="suggestions">
+            <span class="suggestion" onclick="sendSuggestion('Show me Python developer jobs')">🐍 Python jobs</span>
+            <span class="suggestion" onclick="sendSuggestion('What are the top paying positions?')">💰 Top salaries</span>
+            <span class="suggestion" onclick="sendSuggestion('Remote work opportunities')">🏠 Remote jobs</span>
+            <span class="suggestion" onclick="sendSuggestion('Jobs in Bangalore')">📍 Bangalore</span>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="Ask about jobs, skills, companies..." 
+                   onkeypress="handleKeyPress(event)">
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        let isWelcomeVisible = true;
+
+        // Load stats on page load
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                document.getElementById('total-jobs').textContent = data.total_jobs;
+                document.getElementById('total-companies').textContent = data.companies;
+                document.getElementById('total-locations').textContent = data.locations;
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        function addMessage(content, isUser, jobs = null) {
+            // Remove welcome message on first interaction
+            if (isWelcomeVisible) {
+                const welcome = chatContainer.querySelector('.welcome-message');
+                if (welcome) welcome.remove();
+                isWelcomeVisible = false;
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+            
+            // Format content with markdown-like styling
+            let formattedContent = content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+            
+            messageDiv.innerHTML = formattedContent;
+
+            // Add job cards if available
+            if (jobs && jobs.length > 0 && !isUser) {
+                const jobsDiv = document.createElement('div');
+                jobsDiv.className = 'jobs-list';
+                jobsDiv.innerHTML = '<strong>📋 Matching Jobs:</strong>';
+                
+                jobs.forEach(job => {
+                    const jobCard = document.createElement('div');
+                    jobCard.className = 'job-card';
+                    jobCard.innerHTML = `
+                        <h4>${job.company} - ${job.position}</h4>
+                        <p>📍 ${job.location} | 💰 ${job.salary}</p>
+                        <p>🔧 ${job.skills}</p>
+                    `;
+                    jobsDiv.appendChild(jobCard);
+                });
+                
+                messageDiv.appendChild(jobsDiv);
+            }
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            chatContainer.appendChild(typingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, true);
+            messageInput.value = '';
+            sendBtn.disabled = true;
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                hideTyping();
+                addMessage(data.response, false, data.jobs);
+
+            } catch (error) {
+                hideTyping();
+                addMessage('Sorry, something went wrong. Please try again.', false);
+                console.error('Error:', error);
+            }
+
+            sendBtn.disabled = false;
+            messageInput.focus();
+        }
+
+        function sendSuggestion(text) {
+            messageInput.value = text;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize
+        loadStats();
+        messageInput.focus();
+    </script>
+</body>
+</html>

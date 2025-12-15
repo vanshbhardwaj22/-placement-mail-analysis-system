@@ -1,0 +1,53 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Environment variables
+.env
+
+# Credentials and tokens (NEVER COMMIT!)
+credentials.json
+token.json
+*.token
+config.json
+
+# Data files (may contain sensitive info)
+data/*.csv
+data/*.json
+phases/*/attachments/
+phases/*/state/
+
+# Vector databases
+vector_db/
+phases/*/vector_db/
+
+# Excel reports
+excel_reports/
+phases/*/excel_reports/
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Temporary Excel files
+~$*.xlsx
+~$*.xls
