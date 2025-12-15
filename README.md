@@ -291,8 +291,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 Author
 
 **Vansh Bhardwaj**
-- GitHub: [@vanshbhardwaj](https://github.com/vanshbhardwaj)
-- LinkedIn: [Vansh Bhardwaj](https://linkedin.com/in/vanshbhardwaj)
+- GitHub: [@vanshbhardwaj22](https://github.com/vanshbhardwaj22)
+- LinkedIn: [Vansh Bhardwaj](https://www.linkedin.com/in/vanshbhardwaj2004)
 
 ---
 
