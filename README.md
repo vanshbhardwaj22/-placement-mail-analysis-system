@@ -123,7 +123,14 @@ python setup_env.py
 
 ### Configuration
 
-1. **Get Gemini API Key** (Free):
+1. **Environment Variables Setup**:
+   ```bash
+   # Copy example environment file
+   copy .env.example .env  # Windows
+   cp .env.example .env    # Linux/Mac
+   ```
+
+2. **Get Gemini API Key** (Free):
    - Visit [Google AI Studio](https://aistudio.google.com/apikey)
    - Create API key
    - Add to `.env` file:
@@ -131,10 +138,28 @@ python setup_env.py
    GEMINI_API_KEY=your_api_key_here
    ```
 
-2. **Gmail API Setup** (for email extraction):
+3. **Phase 1 Configuration** (for email extraction):
+   ```bash
+   # Copy example config
+   cd "phases/Phase 1"
+   copy config.example.json config.json  # Windows
+   cp config.example.json config.json    # Linux/Mac
+   ```
+   
+   Edit `config.json` with your university's placement email address:
+   ```json
+   {
+     "gmail_query": "from:placementoffice@youruniversity.edu OR subject:(Placement OR Internship)",
+     ...
+   }
+   ```
+
+4. **Gmail API Setup** (for email extraction):
    - Create [Google Cloud Project](https://console.cloud.google.com/)
    - Enable Gmail API
    - Download `credentials.json` to `phases/Phase 1/`
+
+📖 **Detailed Setup:** Each phase has its own `README.md` with specific instructions
 
 ### Run Web Interface
 
@@ -151,20 +176,36 @@ python run_web.py
 placement-mail-analysis-system/
 ├── phases/                      # Six-phase pipeline
 │   ├── Phase 1/                 # 📧 Email extraction
+│   │   ├── README.md            # Phase 1 setup guide
+│   │   ├── config.example.json  # Configuration template
+│   │   └── data_extracting.ipynb
 │   ├── Phase 2/                 # 🧹 Data cleaning
+│   │   ├── README.md            # Phase 2 setup guide
+│   │   └── *.ipynb
 │   ├── Phase 3/                 # 🏢 Entity extraction
+│   │   ├── README.md            # Phase 3 setup guide
+│   │   └── entity_structuring.ipynb
 │   ├── Phase 4/                 # 📊 Job prioritization
+│   │   ├── README.md            # Phase 4 setup guide
+│   │   └── job_prioritization.ipynb
 │   ├── Phase 5/                 # 💬 RAG chatbot
+│   │   ├── README.md            # Phase 5 setup guide
+│   │   └── *.ipynb
 │   └── Phase 6/                 # 📈 Excel reports
+│       ├── README.md            # Phase 6 setup guide
+│       └── Excel_Integrate.ipynb
 ├── web/                         # 🌐 Web interface
 │   ├── app.py                   # FastAPI backend
 │   └── templates/               # HTML templates
+├── .env.example                 # Environment variables template
 ├── run_web.py                   # Start web server
 ├── run_pipeline.py              # Run data pipeline
 ├── setup_env.py                 # Setup helper
 ├── pyproject.toml               # Dependencies
 └── README.md                    # Documentation
 ```
+
+💡 **Tip:** Each phase folder contains a detailed `README.md` with setup instructions, dependencies, and troubleshooting guides.
 
 ---
 

@@ -17,10 +17,12 @@ credentials.json
 token.json
 *.token
 config.json
+!config.example.json
 
 # Data files (may contain sensitive info)
 *.csv
 *.json
+!config.example.json
 !data/.gitkeep
 !render.yaml
 data/*.csv
@@ -29,6 +31,7 @@ phases/*/attachments/
 phases/*/state/
 phases/**/*.csv
 phases/**/*.json
+!phases/**/config.example.json
 
 # Vector databases
 vector_db/

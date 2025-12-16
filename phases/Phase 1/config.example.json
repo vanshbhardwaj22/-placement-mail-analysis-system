@@ -1,0 +1,23 @@
+{
+  "gmail_query": "from:your-placement-office@example.com OR subject:(Placement OR Internship OR Hiring)",
+  "output_csv": "placement_emails.csv",
+  "api_scopes": ["https://www.googleapis.com/auth/gmail.readonly"],
+  "credentials_file": "credentials.json",
+  "token_file": "token.json",
+  
+  "filters": {
+    "allowed_sender_domains": [
+      "example.com",
+      "placement",
+      "tpo"
+    ],
+    "spam_subject_keywords": [
+      "offer", "sale", "discount", "subscribe", "newsletter",
+      "admission", "promotion", "coupon", "university", "enroll", "click here"
+    ],
+    "required_placement_terms": [
+      "drive", "recruitment", "deadline", "eligible", "eligibility",
+      "round", "hiring", "apply before", "interview", "test", "schedule"
+    ]
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "input_csv": "../Phase 1/placement_emails.csv",
+  "output_csv": "ai_cleaned_emails.csv",
+  
+  "knowledge_base": {
+    "skills": [
+      "python", "java", "javascript", "typescript", "c++", "c#", "c", "ruby",
+      "go", "golang", "rust", "swift", "kotlin", "scala", "r", "php", "perl",
+      "react", "reactjs", "angular", "vue", "vuejs", "html", "css", "sass",
+      "bootstrap", "tailwind", "jquery", "webpack", "nextjs", "gatsby",
+      "node.js", "nodejs", "express", "django", "flask", "fastapi", "spring",
+      "spring boot", "asp.net", "laravel", "rails", "ruby on rails",
+      "sql", "mysql", "postgresql", "oracle", "mongodb", "redis", "cassandra",
+      "dynamodb", "elasticsearch", "neo4j", "sqlite", "mariadb", "couchdb",
+      "aws", "azure", "gcp", "google cloud", "docker", "kubernetes", "k8s",
+      "jenkins", "gitlab ci", "github actions", "terraform", "ansible",
+      "chef", "puppet", "circleci", "travis ci",
+      "machine learning", "ml", "deep learning", "ai", "artificial intelligence",
+      "tensorflow", "pytorch", "keras", "scikit-learn", "pandas", "numpy",
+      "data science", "nlp", "computer vision", "cv", "neural networks",
+      "transformers", "bert", "gpt", "llm",
+      "android", "ios", "react native", "flutter", "xamarin",
+      "git", "github", "gitlab", "bitbucket", "jira", "confluence", "slack",
+      "postman", "swagger", "figma", "sketch", "tableau", "power bi",
+      "selenium", "pytest", "junit", "jest", "cypress", "testing", "qa",
+      "test automation", "unit testing", "integration testing",
+      "hadoop", "spark", "pyspark", "kafka", "airflow", "hive", "pig",
+      "flink", "storm", "hbase",
+      "api", "rest", "restful", "graphql", "microservices", "agile", "scrum",
+      "blockchain", "web3", "solidity", "etl", "ci/cd", "linux", "unix",
+      "bash", "powershell", "sap", "salesforce", "excel", "vba"
+    ],
+    
+    "positions": [
+      "software engineer", "software developer", "data scientist", "data analyst",
+      "data engineer", "machine learning engineer", "ml engineer", "ai engineer",
+      "full stack developer", "fullstack developer", "frontend developer",
+      "front end developer", "backend developer", "back end developer",
+      "devops engineer", "cloud engineer", "cloud architect", "solutions architect",
+      "system administrator", "sysadmin", "network engineer", "database administrator",
+      "dba", "business analyst", "product manager", "project manager",
+      "qa engineer", "test engineer", "sdet", "automation engineer",
+      "security engineer", "cyber security analyst", "penetration tester",
+      "ui/ux designer", "ui designer", "ux designer", "graphic designer",
+      "technical lead", "tech lead", "team lead", "engineering manager",
+      "scrum master", "product owner", "consultant", "analyst", "developer",
+      "engineer", "architect", "specialist", "coordinator", "associate",
+      "intern", "trainee", "graduate trainee", "fresher", "junior", "senior"
+    ],
+    
+    "locations": [
+      "bangalore", "bengaluru", "mumbai", "delhi", "new delhi", "ncr",
+      "hyderabad", "pune", "chennai", "kolkata", "calcutta",
+      "ahmedabad", "gurgaon", "gurugram", "noida", "greater noida",
+      "chandigarh", "jaipur", "kochi", "cochin", "thiruvananthapuram",
+      "bhubaneswar", "indore", "coimbatore", "surat", "nagpur", "lucknow",
+      "vadodara", "visakhapatnam", "vizag", "mysore", "mysuru",
+      "remote", "work from home", "wfh", "hybrid", "anywhere", "pan india"
+    ],
+    
+    "degrees": [
+      "b.tech", "btech", "be", "b.e", "bachelor of technology",
+      "bachelor of engineering", "m.tech", "mtech", "me", "m.e",
+      "master of technology", "master of engineering", "bca", "mca",
+      "bachelor of computer applications", "master of computer applications",
+      "bsc", "b.sc", "bachelor of science", "msc", "m.sc", "master of science",
+      "phd", "doctorate", "diploma", "mba", "pgdm"
+    ]
+  },
+  
+  "extraction_patterns": {
+    "company_patterns": [
+      "\\b([A-Z][A-Za-z]+(?:\\s+[A-Z][A-Za-z]+){0,3})\\s+(?:Pvt\\.?\\s*Ltd\\.?|Private\\s+Limited|Limited|Ltd\\.?|Inc\\.?|Incorporated|Corp\\.?|Corporation|LLC|Technologies|Systems|Solutions|Software|Consulting|Services|Group|Enterprises|Industries)\\b",
+      "\\b([A-Z][A-Za-z]{2,}(?:\\s+[A-Z][A-Za-z]+)?)\\s+(?:Tech|IT|Labs|Studio|Agency)\\b"
+    ],
+    
+    "salary_patterns": [
+      "(\\d+(?:\\.\\d+)?)\\s*(?:lpa|lakhs?\\s+per\\s+annum|l\\.?p\\.?a\\.?)",
+      "(\\d+)\\s*(?:k|thousand)\\s*(?:per\\s+month|pm|/month)",
+      "(?:ctc|package|salary)\\s*:?\\s*(?:rs\\.?\\s*)?(\\d+(?:\\.\\d+)?)\\s*(?:lpa|lakhs?)",
+      "(?:stipend|compensation)\\s*:?\\s*(?:rs\\.?\\s*)?(\\d+(?:,\\d+)?)\\s*(?:per\\s+month)?"
+    ],
+    
+    "experience_patterns": [
+      "(\\d+)\\s*(?:\\+|to|-)\\s*(\\d+)\\s*years?\\s+(?:of\\s+)?experience",
+      "(\\d+)\\s*years?\\s+(?:of\\s+)?experience",
+      "\\b(fresher|freshers?)\\b",
+      "\\b(entry\\s+level)\\b",
+      "\\b0\\s*(?:\\+|to|-)\\s*(\\d+)\\s*years?\\b"
+    ]
+  },
+  
+  "text_cleaning": {
+    "remove_patterns": [
+      "(?:best\\s+)?regards?,?.*",
+      "thanks?\\s+(?:and\\s+)?regards?.*",
+      "sincerely,?.*",
+      "warm\\s+regards?.*",
+      "------+\\s*forwarded\\s+message\\s*------+.*",
+      "from:.*?(?:sent:|to:|subject:).*",
+      "----+\\s*original\\s+message\\s*----+.*",
+      "on\\s+\\w+,\\s+\\w+\\s+\\d+,\\s+\\d+.*?wrote:.*",
+      "(?:fwd?|fw|re):.*?\\n",
+      "this\\s+(?:e-?mail|message).*?confidential.*",
+      "disclaimer:.*",
+      "confidentiality\\s+notice:.*",
+      "(?:please\\s+)?do\\s+not\\s+reply.*",
+      "this\\s+is\\s+an?\\s+automated.*",
+      "unsubscribe.*",
+      "sent\\s+from\\s+my.*",
+      "get\\s+outlook\\s+for.*"
+    ],
+    "min_line_length": 5
+  },
+  
+  "processing": {
+    "batch_size": 20,
+    "text_limit": 5000
+  }
+}
