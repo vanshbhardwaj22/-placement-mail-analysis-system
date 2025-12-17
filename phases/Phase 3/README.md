@@ -2,137 +2,348 @@
 
 ## Overview
 
-Phase 3 transforms flat entity strings from Phase 2 into structured job postings with proper relationships and validation. This phase now includes **incremental processing** support and **configuration-driven** behavior.
+Phase 3 transforms flat entity strings from Phase 2 into structured job postings with proper relationships and validation. This phase features **incremental processing** and **configuration-driven** architecture for efficient and customizable entity extraction.
 
-## New Features
+## Key Features
 
 ### ✅ Incremental Processing
-- Only processes NEW emails (not already processed)
-- Maintains state in `state/processed_message_ids.txt`
-- Checkpoint system for crash recovery
-- Merges new results with existing data
-- Significantly faster on subsequent runs
+- **Smart Processing**: Only processes NEW emails that haven't been processed before
+- **State Management**: Maintains state in `state/processed_message_ids.txt`
+- **Checkpoint System**: Saves progress every 50 emails for crash recovery
+- **Result Merging**: Automatically merges new results with existing data
+- **Performance**: **90% faster** on subsequent runs
 
-### ✅ Configuration-Driven
-- All hardcoded values moved to `config.json`
-- Easy customization without code changes
-- Validation of configuration on load
-- Support for different environments
+### ✅ Configuration-Driven Architecture
+- **Centralized Config**: All settings in `config.json` - no hardcoded values
+- **Easy Customization**: Modify behavior without changing code
+- **Comprehensive Validation**: Configuration validated on load
+- **Rich Mappings**: 
+  - 13 skill normalizations (js→javascript, py→python, etc.)
+  - 14 degree normalizations (btech→B.Tech, be→B.E, etc.)
+  - 15 city normalizations (bangalore→Bangalore, bengaluru→Bangalore, etc.)
+  - 9 company suffix removals (PVT LTD, LIMITED, etc.)
 
-## Files
+### ✅ Advanced Parsing
+- **Salary Parsing**: 5 regex patterns for various salary formats (LPA, monthly, CTC, etc.)
+- **Experience Parsing**: 3 patterns for experience requirements
+- **Deadline Parsing**: 3 date format patterns + relative date support
+- **Position Level Detection**: Automatic seniority level classification
+- **Work Mode Detection**: Identifies remote, hybrid, and on-site positions
 
-### Core Files
-- **`entity_structuring_pipeline.py`** - Refactored pipeline with incremental processing
-- **`entity_structuring_incremental.ipynb`** - New notebook using the pipeline
-- **`entity_structuring.ipynb`** - Original notebook (legacy)
-- **`config.json`** - Configuration file with all settings
-- **`config_manager.py`** - Configuration management and validation
-- **`test_config_manager.py`** - Tests for configuration manager
+## File Structure
 
-### Output Files
-- **`structured_job_postings.csv`** - Flattened job data
-- **`structured_job_postings.json`** - Complete structured data
-- **`entity_structuring.log`** - Processing logs
+```
+phases/Phase 3/
+├── entity_structuring.ipynb          # Main notebook (all code in one place)
+├── config.json                        # Configuration file (not in git)
+├── config_manager.py                  # Configuration management & validation
+├── README.md                          # This file
+├── state/                             # State directory (not in git)
+│   └── processed_message_ids.txt     # Tracks processed emails
+├── structured_job_postings.csv        # Output: Flattened data (not in git)
+├── structured_job_postings.json       # Output: Complete structure (not in git)
+└── entity_structuring.log             # Processing logs (not in git)
+```
 
-### State Files
-- **`state/processed_message_ids.txt`** - Tracks processed emails
+### Files Excluded from Git
+- `config.json` - Contains configuration (use config.example.json as template)
+- `*.csv`, `*.json` - Output files
+- `*.log` - Log files
+- `state/` - State tracking directory
 
-## Configuration
+## Quick Start
 
-All settings are in `config.json`:
+### 1. Open Jupyter Notebook
+```bash
+jupyter notebook entity_structuring.ipynb
+```
 
+### 2. Run All Cells
+The notebook will automatically:
+1. Load configuration from `config.json`
+2. Check for previously processed emails
+3. Process only NEW emails
+4. Merge with existing results
+5. Save outputs (CSV + JSON)
+6. Generate analytics report
+
+### 3. View Results
+- **CSV**: `structured_job_postings.csv` - Tabular format (30 columns)
+- **JSON**: `structured_job_postings.json` - Complete structured data
+- **Log**: `entity_structuring.log` - Detailed processing logs
+
+## Configuration Guide
+
+### Main Configuration Sections
+
+#### 1. Incremental Processing
 ```json
 {
   "incremental_processing": {
-    "enabled": true,
-    "state_directory": "state",
-    "state_file": "processed_message_ids.txt",
-    "checkpoint_interval": 50,
-    "force_full_reprocess": false
-  },
-  "processing": {
-    "max_jobs_per_email": 5,
-    "min_completeness_score": 0.3,
-    "enable_analytics": true,
-    "max_companies_per_email": 3,
-    "max_positions_per_email": 3
-  },
-  "normalization": {
-    "skill_map": { ... },
-    "degree_map": { ... },
-    "city_map": { ... },
-    "company_suffixes": [ ... ]
-  },
-  ...
+    "enabled": true,                    // Enable/disable incremental processing
+    "state_directory": "state",         // Directory for state files
+    "state_file": "processed_message_ids.txt",  // State file name
+    "checkpoint_interval": 50,          // Save checkpoint every N emails
+    "force_full_reprocess": false       // Force reprocess all emails
+  }
 }
 ```
 
-### Key Configuration Sections
-
-1. **incremental_processing** - Control incremental behavior
-2. **input_output** - File paths
-3. **processing** - Processing limits and thresholds
-4. **logging** - Log levels and files
-5. **normalization** - Entity normalization mappings
-6. **position_levels** - Keywords for position level detection
-7. **work_mode_keywords** - Remote/hybrid detection
-8. **experience_types** - Experience level thresholds
-9. **salary_parsing** - Salary regex patterns
-10. **experience_parsing** - Experience regex patterns
-11. **deadline_parsing** - Date parsing patterns
-
-## Usage
-
-### Option 1: Using the Notebook (Recommended)
-
-```python
-# Open entity_structuring_incremental.ipynb
-# Run all cells
+#### 2. Input/Output
+```json
+{
+  "input_output": {
+    "input_file": "../Phase 2/relevant_placement_emails.csv",
+    "output_csv": "structured_job_postings.csv",
+    "output_json": "structured_job_postings.json"
+  }
+}
 ```
 
-### Option 2: Using Python Script
-
-```bash
-cd "phases/Phase 3"
-python entity_structuring_pipeline.py
+#### 3. Processing Limits
+```json
+{
+  "processing": {
+    "max_jobs_per_email": 5,            // Max job postings per email
+    "max_companies_per_email": 3,       // Max companies to extract per email
+    "max_positions_per_email": 3,       // Max positions to extract per email
+    "min_completeness_score": 0.3,      // Minimum completeness (0.0-1.0)
+    "enable_analytics": true            // Generate analytics report
+  }
+}
 ```
 
-### Option 3: Programmatic Usage
-
-```python
-from entity_structuring_pipeline import EntityStructuringPipeline
-
-# Initialize with config
-pipeline = EntityStructuringPipeline("config.json")
-
-# Process dataset (incremental by default)
-jobs_df, jobs_list = pipeline.process_dataset()
-
-# Generate analytics
-pipeline.generate_analytics()
+#### 4. Normalization Mappings
+```json
+{
+  "normalization": {
+    "skill_map": {
+      "js": "javascript",
+      "py": "python",
+      "ml": "machine learning",
+      // ... 13 mappings total
+    },
+    "degree_map": {
+      "btech": "B.Tech",
+      "be": "B.E",
+      // ... 14 mappings total
+    },
+    "city_map": {
+      "bangalore": "Bangalore",
+      "bengaluru": "Bangalore",
+      // ... 15 mappings total
+    },
+    "company_suffixes": [
+      "PVT LTD", "LIMITED", "LTD", "INC", "CORP", "CORPORATION", "LLC"
+    ]
+  }
+}
 ```
 
-## Incremental Processing Workflow
+#### 5. Salary Parsing Patterns
+```json
+{
+  "salary_parsing": {
+    "patterns": [
+      {
+        "name": "lpa_range",
+        "pattern": "(\\d+(?:\\.\\d+)?)\\s*(?:-|to)\\s*(\\d+(?:\\.\\d+)?)\\s*(?:lpa|lakhs?\\s+per\\s+annum)",
+        "confidence": 0.9
+      },
+      // ... 5 patterns total
+    ],
+    "default_currency": "INR",
+    "default_period": "annual"
+  }
+}
+```
 
-### First Run
-1. Loads all emails from Phase 2
-2. Processes all emails
-3. Saves results to CSV/JSON
-4. Saves processed message IDs to state file
+## How It Works
 
-### Subsequent Runs
-1. Loads state file (processed message IDs)
-2. Filters out already-processed emails
-3. Processes ONLY new emails
-4. Loads existing results
-5. Merges new results with existing
-6. Saves updated results
-7. Updates state file
+### Incremental Processing Flow
 
-### Force Full Reprocessing
+#### First Run (All Emails)
+```
+1. Load all emails from Phase 2 (e.g., 1000 emails)
+2. Process all 1000 emails (~8 minutes)
+3. Extract structured job postings
+4. Save results to CSV/JSON
+5. Save processed email IDs to state file
+```
 
-To reprocess all emails:
+#### Subsequent Runs (Only New Emails)
+```
+1. Load state file (1000 processed IDs)
+2. Load all emails from Phase 2 (e.g., 1050 emails)
+3. Filter: 1050 - 1000 = 50 new emails
+4. Process only 50 new emails (~30 seconds)
+5. Load existing results (1000 jobs)
+6. Merge: 1000 + new jobs
+7. Save updated results
+8. Update state file (1050 IDs)
+```
 
+### Performance Comparison
+
+| Run | Total Emails | New Emails | Processing Time | Speed Improvement |
+|-----|--------------|------------|-----------------|-------------------|
+| 1st | 1000 | 1000 | 8 minutes | - |
+| 2nd | 1050 | 50 | 30 seconds | **90% faster** |
+| 3rd | 1100 | 50 | 30 seconds | **90% faster** |
+
+### Checkpoint System
+
+The pipeline automatically saves checkpoints:
+- **Frequency**: Every 50 emails (configurable)
+- **Purpose**: Crash recovery
+- **Behavior**: If crash occurs, restart notebook - it resumes from last checkpoint
+- **No Duplicates**: State tracking prevents reprocessing
+
+## Output Schema
+
+### CSV Format (30 Columns)
+
+| Column | Description | Example |
+|--------|-------------|---------|
+| `job_id` | Unique job identifier | `EMAIL123_JOB_1` |
+| `email_id` | Source email ID | `EMAIL123` |
+| `company_name` | Company name | `Tech Corp` |
+| `company_canonical` | Normalized company name | `TECH` |
+| `company_confidence` | Extraction confidence | `0.85` |
+| `position_title` | Job title | `Software Engineer` |
+| `position_level` | Seniority level | `Mid` |
+| `position_confidence` | Extraction confidence | `0.85` |
+| `skills_required` | Comma-separated skills | `Python, Javascript, React` |
+| `skills_count` | Number of skills | `3` |
+| `education_required` | Required degrees | `B.TECH, B.E` |
+| `experience_min_years` | Minimum experience | `2` |
+| `experience_max_years` | Maximum experience | `5` |
+| `experience_type` | Experience category | `Mid Level` |
+| `location_city` | City | `Bangalore` |
+| `location_state` | State | `Karnataka` |
+| `work_mode` | Work mode | `Remote` |
+| `location_confidence` | Extraction confidence | `0.8` |
+| `salary_min` | Minimum salary (INR) | `800000` |
+| `salary_max` | Maximum salary (INR) | `1200000` |
+| `salary_currency` | Currency | `INR` |
+| `salary_period` | Period | `annual` |
+| `salary_raw_text` | Original text | `8-12 lpa` |
+| `salary_confidence` | Extraction confidence | `0.9` |
+| `application_deadline` | Deadline date | `2025-12-31` |
+| `apply_link` | Application URL | `https://...` |
+| `contact_email` | Contact email | `hr@company.com` |
+| `completeness_score` | Data completeness (0-1) | `0.75` |
+| `extraction_timestamp` | Processing time | `2025-12-17T23:18:16` |
+| `source_subject` | Email subject | `Job Opening - SE` |
+
+### JSON Format
+
+```json
+{
+  "job_id": "EMAIL123_JOB_1",
+  "email_id": "EMAIL123",
+  "company": {
+    "name": "Tech Corp",
+    "canonical_name": "TECH",
+    "confidence": 0.85
+  },
+  "position": {
+    "title": "Software Engineer",
+    "level": "Mid",
+    "confidence": 0.85
+  },
+  "requirements": {
+    "skills": ["python", "javascript", "react"],
+    "education": ["B.TECH", "B.E"],
+    "experience_min": 2,
+    "experience_max": 5,
+    "experience_type": "Mid Level"
+  },
+  "location": {
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "work_mode": "Remote",
+    "confidence": 0.8
+  },
+  "compensation": {
+    "salary_min": 800000,
+    "salary_max": 1200000,
+    "currency": "INR",
+    "period": "annual",
+    "raw_text": "8-12 lpa",
+    "confidence": 0.9
+  },
+  "application": {
+    "deadline": "2025-12-31",
+    "apply_link": null,
+    "contact_email": "hr@company.com"
+  },
+  "metadata": {
+    "completeness_score": 0.75,
+    "extraction_timestamp": "2025-12-17T23:18:16.261894",
+    "source_subject": "Job Opening - Software Engineer"
+  }
+}
+```
+
+## Customization Examples
+
+### Add New Skill Mapping
+```json
+{
+  "normalization": {
+    "skill_map": {
+      "vue": "vue.js",
+      "angular": "angularjs",
+      "docker": "docker"
+    }
+  }
+}
+```
+
+### Add New City Mapping
+```json
+{
+  "normalization": {
+    "city_map": {
+      "noida": "Noida",
+      "greater noida": "Noida",
+      "navi mumbai": "Mumbai"
+    }
+  }
+}
+```
+
+### Add Custom Salary Pattern
+```json
+{
+  "salary_parsing": {
+    "patterns": [
+      {
+        "name": "usd_range",
+        "pattern": "\\$(\\d+)k?\\s*-\\s*\\$(\\d+)k?",
+        "confidence": 0.9
+      }
+    ]
+  }
+}
+```
+
+### Change Processing Limits
+```json
+{
+  "processing": {
+    "max_jobs_per_email": 10,
+    "max_companies_per_email": 5,
+    "max_positions_per_email": 5,
+    "min_completeness_score": 0.5
+  }
+}
+```
+
+## Force Full Reprocessing
+
+### Method 1: Edit Configuration
 ```json
 {
   "incremental_processing": {
@@ -141,137 +352,91 @@ To reprocess all emails:
 }
 ```
 
-Or delete the state file:
+### Method 2: Delete State File
 ```bash
+# Windows
+del state\processed_message_ids.txt
+
+# Linux/Mac
 rm state/processed_message_ids.txt
 ```
 
-## Customization
+## Analytics Report
 
-### Adding New Skills to Normalize
+The pipeline automatically generates analytics:
 
-Edit `config.json`:
-```json
-{
-  "normalization": {
-    "skill_map": {
-      "your_abbreviation": "full_name",
-      "react": "reactjs"
-    }
-  }
-}
-```
+### Basic Statistics
+- Total job postings
+- Unique companies
+- Unique positions
+- Unique locations
 
-### Changing Processing Limits
+### Top 10 Reports
+- Top 10 hiring companies
+- Top 10 job positions
+- Top 10 locations
 
-```json
-{
-  "processing": {
-    "max_jobs_per_email": 10,
-    "max_companies_per_email": 5,
-    "max_positions_per_email": 5
-  }
-}
-```
+### Salary Statistics
+- Jobs with salary information (%)
+- Average salary (LPA)
+- Median salary (LPA)
 
-### Adding Salary Patterns
-
-```json
-{
-  "salary_parsing": {
-    "patterns": [
-      {
-        "name": "your_pattern",
-        "pattern": "regex_here",
-        "confidence": 0.85
-      }
-    ]
-  }
-}
-```
-
-## Performance
-
-### Without Incremental Processing
-- First run: ~5-10 minutes for 1000 emails
-- Subsequent runs: ~5-10 minutes (reprocesses everything)
-
-### With Incremental Processing
-- First run: ~5-10 minutes for 1000 emails
-- Subsequent runs: ~30 seconds (only new emails)
-- **90% faster** on subsequent runs!
-
-## Checkpoint System
-
-The pipeline saves checkpoints every N emails (default: 50):
-- If the process crashes, restart it
-- It will resume from the last checkpoint
-- No duplicate processing
-
-## Testing
-
-Run configuration tests:
-```bash
-python test_config_manager.py
-```
-
-## Migration from Old Notebook
-
-The old `entity_structuring.ipynb` still works but doesn't have:
-- Incremental processing
-- Configuration file support
-- State management
-
-**Recommended:** Use `entity_structuring_incremental.ipynb` instead.
+### Data Quality
+- Average completeness score
+- High/Medium/Low quality distribution
 
 ## Troubleshooting
 
 ### "No new emails to process"
-- All emails have been processed
-- Check `state/processed_message_ids.txt`
-- Set `force_full_reprocess: true` to reprocess
+**Cause**: All emails have been processed  
+**Solution**:
+- Check `state/processed_message_ids.txt` to see processed IDs
+- Set `force_full_reprocess: true` in config to reprocess all
+- Or delete the state file
 
 ### Configuration validation errors
-- Check `config.json` syntax
+**Cause**: Invalid or missing configuration fields  
+**Solution**:
+- Check `config.json` syntax (valid JSON)
 - Ensure all required fields are present
-- Run `python test_config_manager.py`
+- Compare with `config.example.json` if available
 
 ### Missing input file
-- Ensure Phase 2 has been run
-- Check `input_file` path in config
-- Path is relative to Phase 3 directory
+**Cause**: Phase 2 output not found  
+**Solution**:
+- Ensure Phase 2 has been run successfully
+- Check `input_file` path in config (relative to Phase 3 directory)
+- Verify file exists: `../Phase 2/relevant_placement_emails.csv`
 
-## Output Schema
+### Unicode encoding errors in logs
+**Cause**: Windows console encoding issues with special characters (₹, 🏗️)  
+**Impact**: Only affects console logging, not file output  
+**Solution**: These are warnings only - pipeline works correctly
 
-### CSV Columns
-- `job_id`, `email_id`
-- `company_name`, `company_canonical`, `company_confidence`
-- `position_title`, `position_level`, `position_confidence`
-- `skills_required`, `skills_count`, `education_required`
-- `experience_min_years`, `experience_max_years`, `experience_type`
-- `location_city`, `location_state`, `work_mode`, `location_confidence`
-- `salary_min`, `salary_max`, `salary_currency`, `salary_period`
-- `application_deadline`, `apply_link`, `contact_email`
-- `completeness_score`, `extraction_timestamp`, `source_subject`
+### Low completeness scores
+**Cause**: Missing data in source emails  
+**Solution**:
+- Check `min_completeness_score` setting (default: 0.3)
+- Lower threshold to include more jobs
+- Review source emails for data quality
 
-### JSON Structure
-```json
-{
-  "job_id": "...",
-  "email_id": "...",
-  "company": { "name": "...", "canonical_name": "...", "confidence": 0.85 },
-  "position": { "title": "...", "level": "...", "confidence": 0.85 },
-  "requirements": { "skills": [...], "education": [...], "experience_min": 0, "experience_max": 5 },
-  "location": { "city": "...", "state": "...", "work_mode": "...", "confidence": 0.8 },
-  "compensation": { "salary_min": 0, "salary_max": 0, "currency": "INR", "period": "annual" },
-  "application": { "deadline": "...", "apply_link": "...", "contact_email": "..." },
-  "metadata": { "completeness_score": 0.75, "extraction_timestamp": "...", "source_subject": "..." }
-}
-```
+## What's New
 
-## Next Steps
+### ✅ Refactoring Improvements
+1. **Single Notebook Architecture** - All code in `entity_structuring.ipynb`
+2. **Configuration File** - All hardcoded values moved to `config.json`
+3. **Incremental Processing** - Only processes new emails
+4. **State Management** - Tracks processed emails
+5. **Checkpoint System** - Crash recovery support
+6. **Comprehensive Validation** - Config validated on load
+7. **Rich Normalization** - 13 skills, 14 degrees, 15 cities
+8. **Advanced Parsing** - 5 salary patterns, 3 experience patterns
 
-After Phase 3, proceed to:
-- **Phase 4**: Job Prioritization
-- **Phase 5**: RAG System & Conversational Agent
-- **Phase 6**: Excel Report Generation
+### 🎯 Benefits
+- **90% faster** on subsequent runs
+- **Easy customization** via config file
+- **No code changes** needed for adjustments
+- **Crash recovery** with checkpoints
+- **No duplicates** with state tracking
+- **Clean structure** with single notebook
+- **Production ready** with comprehensive error handling
